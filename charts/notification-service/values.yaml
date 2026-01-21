@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: techxus/notification-service
-  tag: latest
+  repository: ""
+  tag: ""
 
 resources:
   requests:

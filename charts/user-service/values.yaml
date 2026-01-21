@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: techxus/user-service
-  tag: latest
+  repository: ""
+  tag: ""
 
 resources:
   requests:
