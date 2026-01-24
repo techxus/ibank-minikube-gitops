@@ -3,7 +3,7 @@ nameOverride: user-service
 # Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/user-service
-  tag: "1.0.0"
+  tag: "77d7a65d1bb1e3e6aa1d3d849dc964dac47aafe5"
 
 probes:
   readinessPath: /api/v1/user/actuator/health/readiness
