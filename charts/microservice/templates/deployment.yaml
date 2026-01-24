@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ default .Release.Name .Values.nameOverride }}
+  labels:
+    app: {{ default .Release.Name .Values.nameOverride }}
+    app.kubernetes.io/name: {{ default .Release.Name .Values.nameOverride }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ default .Release.Name .Values.nameOverride }}
+      app.kubernetes.io/name: {{ default .Release.Name .Values.nameOverride }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ default .Release.Name .Values.nameOverride }}
+        app.kubernetes.io/name: {{ default .Release.Name .Values.nameOverride }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: {{ default .Release.Name .Values.nameOverride }}
+          image: "{{ required "image.repository is required" .Values.image.repository }}:{{ required "image.tag is required" .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          {{- if and .Values.config.enabled .Values.config.applicationYaml }}
+          volumeMounts:
+            - name: app-config
+              mountPath: /config/application.yaml
+              subPath: application.yaml
+          {{- end }}
+
+          {{- if .Values.probes.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readinessPath }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.livenessPath }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          {{- end }}
+
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]
+
+      {{- if and .Values.config.enabled .Values.config.applicationYaml }}
+      volumes:
+        - name: app-config
+          configMap:
+            name: {{ default .Release.Name .Values.nameOverride }}-config
+            items:
+              - key: application.yaml
+                path: application.yaml
+      {{- end }}

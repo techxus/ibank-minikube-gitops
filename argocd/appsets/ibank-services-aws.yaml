@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ibank-services-aws
+  namespace: platform
+spec:
+  generators:
+    - matrix:
+        generators:
+
+          # Services
+          - list:
+              elements:
+                - service: gateway-service
+                - service: user-service
+                - service: notification-service
+
+          # AWS environments only
+          - list:
+              elements:
+                - env: dev
+                  namespace: apps-dev
+                - env: stage
+                  namespace: apps-stage
+                - env: prod
+                  namespace: apps-prod
+
+  template:
+    metadata:
+      name: "{{service}}-{{env}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/techxus/ibank-minikube-gitops.git
+        targetRevision: master
+        path: charts/microservice
+        helm:
+          valueFiles:
+            - ../../env/{{env}}/{{service}}-values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
