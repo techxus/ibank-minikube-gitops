@@ -1,31 +1,3 @@
-nameOverride: gateway-service
-
 image:
   repository: techxus/gateway-service
-  tag: "1.0.0"
-
-ingress:
-  enabled: true
-  className: nginx
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  hosts:
-    - paths:
-        - path: /
-          pathType: Prefix
-
-config:
-  enabled: true
-  applicationYaml: |
-    spring:
-      cloud:
-        gateway:
-          routes:
-            - id: user-service
-              uri: http://user-service
-              predicates:
-                - Path=/api/v1/user/**
-            - id: notification-service
-              uri: http://notification-service
-              predicates:
-                - Path=/api/v1/notification/**
+  tag: "99678359e31adf7381a4a5016f2c2335abb2feda"
