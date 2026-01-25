@@ -3,7 +3,7 @@ nameOverride: notification-service
 # Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/notification-service
-  tag: "6b6d502f5651323557954793267e57dd51ed3be5"
+  tag: "ff917bc89db2c244484801875f9a05f4ba9831f5"
 
 probes:
   readinessPath: /api/v1/notification/actuator/health/readiness
