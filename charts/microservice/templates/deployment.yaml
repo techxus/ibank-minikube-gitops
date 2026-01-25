@@ -28,6 +28,9 @@ spec:
           ports:
             - containerPort: {{ .Values.service.targetPort }}
           env:
+            - name: SPRING_CLOUD_VAULT_KV_DEFAULT_CONTEXT
+              value: shared
+
             - name: SPRING_PROFILES_ACTIVE
               value: {{ required "spring.profile is required" .Values.spring.profile | quote }}
 
