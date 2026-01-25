@@ -1,32 +1,24 @@
 server:
-  dataStorage:
-    enabled: true
-    size: 5Gi
-    storageClass: standard
-
   ha:
     enabled: true
     replicas: 1
     raft:
       enabled: true
 
-  # IMPORTANT: no dev mode
-  dev:
-    enabled: false
+  dataStorage:
+    enabled: true
+    size: 5Gi
+    storageClass: standard
 
-  # Vault listener with TLS
-  extraEnvironmentVars:
-    VAULT_CACERT: /vault/userconfig/vault-tls/ca.crt
-
+  # ✅ This chart mounts "userconfig-<name>" at <path>/<name>
+  # Your mistake earlier was using a relative path like "vault-tls"
   extraVolumes:
     - type: secret
       name: vault-tls
-      path: vault-tls
+      path: /vault/userconfig
 
-  extraVolumeMounts:
-    - name: vault-tls
-      mountPath: /vault/userconfig/vault-tls
-      readOnly: true
+  extraEnvironmentVars:
+    VAULT_CACERT: /vault/userconfig/vault-tls/ca.crt
 
   config: |
     ui = true
@@ -43,6 +35,3 @@ server:
     }
 
     service_registration "kubernetes" {}
-
-ui:
-  enabled: true
