@@ -5,6 +5,9 @@ image:
   repository: techxus/notification-service
   tag: "e1b363c3a5437e5840a1903d35ea472c0f6f5f8f"
 
+spring:
+  profile: local
+
 probes:
   readinessPath: /api/v1/notification/actuator/health/readiness
   livenessPath: /api/v1/notification/actuator/health/liveness

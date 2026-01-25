@@ -4,6 +4,9 @@ image:
   repository: techxus/gateway-service
   tag: "9ad18bf3daf7f604d7d22fe01666a04cf124f5d5"
 
+spring:
+  profile: local
+
 ingress:
   enabled: true
   className: nginx
