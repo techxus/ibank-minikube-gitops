@@ -5,6 +5,9 @@ image:
   repository: techxus/user-service
   tag: "5cbeadd8e032bcc1d009c1288c55c5a51f73142d"
 
+spring:
+  profile: dev
+
 probes:
   readinessPath: /api/v1/user/actuator/health/readiness
   livenessPath: /api/v1/user/actuator/health/liveness

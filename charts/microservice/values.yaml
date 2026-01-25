@@ -3,6 +3,9 @@ fullnameOverride: ""
 
 replicaCount: 1
 
+spring:
+  profile: ""
+
 image:
   repository: ""
   tag: ""
