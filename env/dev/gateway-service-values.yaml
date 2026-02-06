@@ -2,7 +2,7 @@ nameOverride: gateway-service
 
 image:
   repository: techxus/gateway-service
-  tag: "61513dd5da7d849732766b3223b0508a73055fdd"
+  tag: "6242605e7f48e93c3c436ac59b84e5c4265c97aa"
 
 spring:
   profile: dev
