@@ -12,22 +12,22 @@ spec:
           - list:
               elements:
                 - service: gateway-service
-                - service: user-service
-                - service: notification-service
+#                - service: user-service
+#                - service: notification-service
 
           # AWS environments only
           - list:
               elements:
                 - env: dev
                   namespace: apps-dev
-                - env: stage
-                  namespace: apps-stage
-                - env: prod
-                  namespace: apps-prod
+#                - env: stage
+#                  namespace: apps-stage
+#                - env: prod
+#                  namespace: apps-prod
 
   template:
     metadata:
-      name: "{{service}}-{{env}}"
+      name: "{{service}}"
     spec:
       project: default
       source:

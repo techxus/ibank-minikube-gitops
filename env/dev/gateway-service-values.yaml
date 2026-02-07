@@ -17,6 +17,10 @@ ingress:
         - path: /
           pathType: Prefix
 
+monitoring:
+  serviceMonitor:
+    enabled: false
+
 config:
   enabled: true
   applicationYaml: |
