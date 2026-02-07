@@ -3,7 +3,7 @@ nameOverride: notification-service
 # Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/notification-service
-  tag: "9153581f508a8acf4cc65eedcb01a34fff2763cf"
+  tag: "849f750578ea23100a4161d20b5ac6896b639fad"
 
 spring:
   profile: local
