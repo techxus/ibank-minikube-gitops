@@ -9,11 +9,17 @@ spring:
 
 ingress:
   enabled: true
-  className: nginx
+  className: alb
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:121897425968:certificate/1eb377b0-2d0a-43d7-9cdf-93461547a8ad"
   hosts:
-    - paths:
+    - host: api.dev.bankit.cloud
+      paths:
         - path: /
           pathType: Prefix
 
