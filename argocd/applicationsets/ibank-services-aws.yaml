@@ -12,8 +12,9 @@ spec:
           - list:
               elements:
                 - service: gateway-service
+                - service: notification-service
 #                - service: user-service
-#                - service: notification-service
+
 
           # AWS environments only
           - list:
