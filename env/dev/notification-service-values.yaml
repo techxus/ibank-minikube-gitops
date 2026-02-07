@@ -11,3 +11,7 @@ spring:
 probes:
   readinessPath: /api/v1/notification/actuator/health/readiness
   livenessPath: /api/v1/notification/actuator/health/liveness
+
+monitoring:
+  serviceMonitor:
+    enabled: false
