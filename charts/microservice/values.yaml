@@ -63,3 +63,11 @@ monitoring:
     portName: http
     path: /actuator/prometheus
     interval: 30s
+
+secretsStore:
+  enabled: false
+  # Name of the SecretProviderClass in the service namespace
+  secretProviderClass: "ibank-postgres"
+  mountPath: "/mnt/secrets-store"
+  datasourceUrl: ""
+

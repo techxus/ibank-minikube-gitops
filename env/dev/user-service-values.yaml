@@ -12,3 +12,6 @@ probes:
   readinessPath: /api/v1/user/actuator/health/readiness
   livenessPath: /api/v1/user/actuator/health/liveness
 
+secretsStore:
+  enabled: true
+  datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"

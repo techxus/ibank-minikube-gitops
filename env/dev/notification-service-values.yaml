@@ -15,3 +15,7 @@ probes:
 monitoring:
   serviceMonitor:
     enabled: false
+
+secretsStore:
+  enabled: true
+  datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"
