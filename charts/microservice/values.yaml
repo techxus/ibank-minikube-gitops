@@ -72,4 +72,5 @@ secretsStore:
   mountPath: "/mnt/secrets-store"
   dbSecretName: ibank-postgres-secret
   datasourceUrl: ""
+  secretId: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
 

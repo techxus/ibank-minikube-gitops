@@ -5,7 +5,6 @@ resources:
   - applicationsets/ibank-services-local.yaml
 
   - apps/db-secrets-reader-sa.yaml
-  - apps/ibank-postgres-spc.yaml
 
   - apps/secrets-store-csi-driver-app.yaml
   - apps/secrets-store-csi-aws-provider-app.yaml
