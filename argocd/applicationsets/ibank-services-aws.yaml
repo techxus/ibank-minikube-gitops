@@ -14,6 +14,7 @@ spec:
                 - service: gateway-service
                 - service: notification-service
                 - service: user-service
+                - service: reporting-service
 
           # AWS environments only
           - list:
