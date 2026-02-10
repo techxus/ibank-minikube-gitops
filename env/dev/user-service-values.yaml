@@ -18,4 +18,7 @@ monitoring:
 
 secretsStore:
   enabled: true
+  region: us-east-1
+  secretProviderClass: ibank-postgres
+  secretArn: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
   datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"
