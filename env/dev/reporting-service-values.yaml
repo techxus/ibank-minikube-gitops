@@ -7,11 +7,11 @@ image:
 
 spring:
   profile: dev
-  defaultSchema: reporting
+  defaultSchema: report
 
 probes:
-  readinessPath: /api/v1/reporting/actuator/health/readiness
-  livenessPath: /api/v1/reporting/actuator/health/liveness
+  readinessPath: /api/v1/report/actuator/health/readiness
+  livenessPath: /api/v1/report/actuator/health/liveness
 
 monitoring:
   serviceMonitor:

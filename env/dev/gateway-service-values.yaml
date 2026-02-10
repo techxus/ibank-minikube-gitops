@@ -45,4 +45,4 @@ config:
             - id: reporting-service
               uri: http://reporting-service
               predicates:
-                - Path=/api/v1/reporting/**
+                - Path=/api/v1/report/**
