@@ -3,7 +3,7 @@ nameOverride: user-service
 # Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/user-service
-  tag: "1d256074c7d66acbfc0e471ec65703453051fb05"
+  tag: "f9f2298cd7f816c5e60f7cbef9429c6e2e6d5e1d"
 
 spring:
   profile: dev
