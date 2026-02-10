@@ -70,5 +70,6 @@ secretsStore:
   # Name of the SecretProviderClass in the service namespace
   secretProviderClass: "ibank-postgres"
   mountPath: "/mnt/secrets-store"
+  dbSecretName: ibank-postgres-secret
   datasourceUrl: ""
 
