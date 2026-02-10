@@ -6,7 +6,7 @@ spec:
   provider: aws
   parameters:
     objects: |
-      - objectName: "ibank-eks-dev/rds/postgres"
+      - objectName: "objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8"
         objectType: "secretsmanager"
         jmesPath:
           - path: "username"
