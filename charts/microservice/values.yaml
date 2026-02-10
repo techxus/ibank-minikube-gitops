@@ -12,7 +12,7 @@ image:
   pullPolicy: IfNotPresent
 
 serviceAccount:
-  create: true
+  create: false
   name: db-secrets-sa
   roleArn: arn:aws:iam::121897425968:role/ibank-eks-dev-db-secrets-reader
 
