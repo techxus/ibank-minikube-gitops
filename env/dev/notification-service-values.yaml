@@ -7,6 +7,7 @@ image:
 
 spring:
   profile: dev
+  defaultSchema: notification
 
 probes:
   readinessPath: /api/v1/notification/actuator/health/readiness
