@@ -2,11 +2,13 @@ apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
   name: ibank-postgres
+  namespace: apps-dev
 spec:
   provider: aws
   parameters:
+    region: us-east-1
     objects: |
-      - objectName: {{ .Values.secretsStore.secretId | quote }}
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8"
         objectType: "secretsmanager"
         jmesPath:
           - path: "username"
