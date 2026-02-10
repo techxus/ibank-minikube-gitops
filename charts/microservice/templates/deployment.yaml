@@ -21,10 +21,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       terminationGracePeriodSeconds: 30
-
-      {{- if .Values.secretsStore.enabled }}
-      serviceAccountName: {{ .Values.secretsStore.serviceAccountName | quote }}
-      {{- end }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default (.Values.nameOverride | default .Release.Name) | quote }}
 
       containers:
         - name: {{ default .Release.Name .Values.nameOverride }}

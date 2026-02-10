@@ -12,8 +12,9 @@ image:
   pullPolicy: IfNotPresent
 
 serviceAccount:
-  create: false
-  name: ""
+  create: true
+  name: db-secrets-sa
+  roleArn: ""
 
 podAnnotations: {}
 
