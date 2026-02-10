@@ -7,6 +7,7 @@ image:
 
 spring:
   profile: dev
+  defaultSchema: user
 
 probes:
   readinessPath: /api/v1/user/actuator/health/readiness
