@@ -1,0 +1,19 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: ibank-redis
+  namespace: apps-dev
+spec:
+  provider: aws
+  parameters:
+    region: us-east-1
+    objects: |
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/redis"
+        objectType: "secretsmanager"
+        jmesPath:
+          - path: "host"
+            objectAlias: "spring.redis.host"
+          - path: "port"
+            objectAlias: "spring.redis.port"
+          - path: "password"
+            objectAlias: "spring.redis.password"

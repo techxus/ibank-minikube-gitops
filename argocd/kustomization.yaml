@@ -8,3 +8,6 @@ resources:
 
   - apps/secrets-store-csi-driver-app.yaml
   - apps/secrets-store-csi-aws-provider-app.yaml
+
+  - apps/ibank-redis-spc.yaml
+
