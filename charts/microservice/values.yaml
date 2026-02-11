@@ -67,10 +67,11 @@ monitoring:
 
 secretsStore:
   enabled: false
-  # Name of the SecretProviderClass in the service namespace
+  region: us-east-1
   secretProviderClass: "ibank-postgres"
   mountPath: "/mnt/secrets-store"
-  dbSecretName: ibank-postgres-secret
+  dbSecretName: ""
   datasourceUrl: ""
-  secretId: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
+  secretArn: ""
+
 

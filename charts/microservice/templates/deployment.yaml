@@ -19,6 +19,10 @@ spec:
         app: {{ default .Release.Name .Values.nameOverride }}
         app.kubernetes.io/name: {{ default .Release.Name .Values.nameOverride }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
     spec:
       terminationGracePeriodSeconds: 30
       serviceAccountName: {{ .Values.serviceAccount.name | default (.Values.nameOverride | default .Release.Name) | quote }}
@@ -28,7 +32,9 @@ spec:
           image: "{{ required "image.repository is required" .Values.image.repository }}:{{ required "image.tag is required" .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
 
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -38,13 +44,17 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # Spring reads /mnt/secrets-store/spring.datasource.username + spring.datasource.password
-            # from the CSI volume (no Kubernetes Secret required)
+            # Load secrets from CSI configtree (Postgres now, Redis later)
             - name: SPRING_CONFIG_IMPORT
               value: {{ printf "optional:configtree:%s/" .Values.secretsStore.mountPath | quote }}
 
+            # Non-secret config stays explicit
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
+            {{- end }}
+
+            {{- with .Values.env }}
+{{ toYaml . | indent 12 }}
             {{- end }}
 
           {{- if or (and .Values.config.enabled .Values.config.applicationYaml) .Values.secretsStore.enabled }}
@@ -53,6 +63,7 @@ spec:
             - name: app-config
               mountPath: /config/application.yaml
               subPath: application.yaml
+              readOnly: true
             {{- end }}
 
             {{- if .Values.secretsStore.enabled }}
@@ -69,6 +80,8 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
 
           livenessProbe:
             httpGet:
@@ -76,6 +89,8 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 30
             periodSeconds: 20
+            timeoutSeconds: 1
+            failureThreshold: 3
           {{- end }}
 
           resources:
