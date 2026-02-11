@@ -38,11 +38,10 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # 🔐 Load secrets from CSI configtree (Postgres + Redis)
+            # Load Postgres + Redis from CSI configtree
             - name: SPRING_CONFIG_IMPORT
-              value: {{ printf "optional:configtree:%s/,optional:configtree:%s/" .Values.secretsStore.mountPathPostgres .Values.secretsStore.mountPathRedis | quote }}
+              value: {{ printf "optional:configtree:%s/postgres/,optional:configtree:%s/redis/" .Values.secretsStore.mountPath .Values.secretsStore.mountPath | quote }}
 
-            # DB URL stays explicit (username/password come from configtree)
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
             {{- end }}
@@ -57,10 +56,10 @@ spec:
 
             {{- if .Values.secretsStore.enabled }}
             - name: secrets-store-postgres
-              mountPath: {{ .Values.secretsStore.mountPathPostgres }}
+              mountPath: {{ printf "%s/postgres" .Values.secretsStore.mountPath | quote }}
               readOnly: true
             - name: secrets-store-redis
-              mountPath: {{ .Values.secretsStore.mountPathRedis }}
+              mountPath: {{ printf "%s/redis" .Values.secretsStore.mountPath | quote }}
               readOnly: true
             {{- end }}
           {{- end }}
@@ -72,7 +71,6 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
-
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.livenessPath }}
@@ -111,13 +109,12 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secretsStore.postgresSecretProviderClass | quote }}
-
+              secretProviderClass: "ibank-postgres"
         - name: secrets-store-redis
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secretsStore.redisSecretProviderClass | quote }}
+              secretProviderClass: "ibank-redis"
         {{- end }}
       {{- end }}
