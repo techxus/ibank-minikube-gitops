@@ -68,13 +68,13 @@ monitoring:
 secretsStore:
   enabled: false
   region: us-east-1
-  secretProviderClass: "ibank-postgres"
   mountPath: "/mnt/secrets-store"
-  dbSecretName: ""
-  datasourceUrl: ""
-  secretArn: ""
   postgresSecretProviderClass: "ibank-postgres"
   redisSecretProviderClass: "ibank-redis"
+  datasourceUrl: ""
+  bSecretName: ""
+  secretArn: ""
+
 
 
 
