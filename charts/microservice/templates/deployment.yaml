@@ -19,10 +19,6 @@ spec:
         app: {{ default .Release.Name .Values.nameOverride }}
         app.kubernetes.io/name: {{ default .Release.Name .Values.nameOverride }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-      {{- with .Values.podAnnotations }}
-      annotations:
-{{ toYaml . | indent 8 }}
-      {{- end }}
     spec:
       terminationGracePeriodSeconds: 30
       serviceAccountName: {{ .Values.serviceAccount.name | default (.Values.nameOverride | default .Release.Name) | quote }}
@@ -32,9 +28,7 @@ spec:
           image: "{{ required "image.repository is required" .Values.image.repository }}:{{ required "image.tag is required" .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.targetPort }}
-              protocol: TCP
+            - containerPort: {{ .Values.service.targetPort }}
 
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -44,17 +38,11 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # Load secrets from CSI configtree (Postgres now, Redis later)
             - name: SPRING_CONFIG_IMPORT
               value: {{ printf "optional:configtree:%s/" .Values.secretsStore.mountPath | quote }}
 
-            # Non-secret config stays explicit
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
-            {{- end }}
-
-            {{- with .Values.env }}
-{{ toYaml . | indent 12 }}
             {{- end }}
 
           {{- if or (and .Values.config.enabled .Values.config.applicationYaml) .Values.secretsStore.enabled }}
@@ -63,11 +51,15 @@ spec:
             - name: app-config
               mountPath: /config/application.yaml
               subPath: application.yaml
-              readOnly: true
             {{- end }}
 
             {{- if .Values.secretsStore.enabled }}
-            - name: secrets-store
+            # Postgres secrets
+            - name: secrets-store-postgres
+              mountPath: {{ .Values.secretsStore.mountPath }}
+              readOnly: true
+            # Redis secrets
+            - name: secrets-store-redis
               mountPath: {{ .Values.secretsStore.mountPath }}
               readOnly: true
             {{- end }}
@@ -80,8 +72,6 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
-            timeoutSeconds: 1
-            failureThreshold: 3
 
           livenessProbe:
             httpGet:
@@ -89,8 +79,6 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 30
             periodSeconds: 20
-            timeoutSeconds: 1
-            failureThreshold: 3
           {{- end }}
 
           resources:
@@ -118,11 +106,18 @@ spec:
         {{- end }}
 
         {{- if .Values.secretsStore.enabled }}
-        - name: secrets-store
+        - name: secrets-store-postgres
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secretsStore.secretProviderClass | quote }}
+              secretProviderClass: {{ .Values.secretsStore.postgresSecretProviderClass | default "ibank-postgres" | quote }}
+
+        - name: secrets-store-redis
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secretsStore.redisSecretProviderClass | default "ibank-redis" | quote }}
         {{- end }}
       {{- end }}
