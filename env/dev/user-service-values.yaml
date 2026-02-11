@@ -23,6 +23,8 @@ secretsStore:
   mountPath: "/mnt/secrets-store"
   postgresSecretProviderClass: "ibank-postgres"
   redisSecretProviderClass: "ibank-redis"
+  mountPathPostgres: "/mnt/secrets-store/postgres"
+  mountPathRedis: "/mnt/secrets-store/redis"
   secretArn: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
   datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"
 

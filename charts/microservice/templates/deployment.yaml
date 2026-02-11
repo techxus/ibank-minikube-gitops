@@ -38,9 +38,11 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
+            # 🔐 Load secrets from CSI configtree (Postgres + Redis)
             - name: SPRING_CONFIG_IMPORT
-              value: {{ printf "optional:configtree:%s/" .Values.secretsStore.mountPath | quote }}
+              value: {{ printf "optional:configtree:%s/,optional:configtree:%s/" .Values.secretsStore.mountPathPostgres .Values.secretsStore.mountPathRedis | quote }}
 
+            # DB URL stays explicit (username/password come from configtree)
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
             {{- end }}
@@ -54,13 +56,11 @@ spec:
             {{- end }}
 
             {{- if .Values.secretsStore.enabled }}
-            # Postgres secrets
             - name: secrets-store-postgres
-              mountPath: {{ .Values.secretsStore.mountPath }}
+              mountPath: {{ .Values.secretsStore.mountPathPostgres }}
               readOnly: true
-            # Redis secrets
             - name: secrets-store-redis
-              mountPath: {{ .Values.secretsStore.mountPath }}
+              mountPath: {{ .Values.secretsStore.mountPathRedis }}
               readOnly: true
             {{- end }}
           {{- end }}
@@ -111,13 +111,13 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secretsStore.postgresSecretProviderClass | default "ibank-postgres" | quote }}
+              secretProviderClass: {{ .Values.secretsStore.postgresSecretProviderClass | quote }}
 
         - name: secrets-store-redis
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secretsStore.redisSecretProviderClass | default "ibank-redis" | quote }}
+              secretProviderClass: {{ .Values.secretsStore.redisSecretProviderClass | quote }}
         {{- end }}
       {{- end }}

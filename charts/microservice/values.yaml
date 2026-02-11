@@ -69,6 +69,8 @@ secretsStore:
   enabled: false
   region: us-east-1
   mountPath: "/mnt/secrets-store"
+  mountPathPostgres: "/mnt/secrets-store/postgres"
+  mountPathRedis: "/mnt/secrets-store/redis"
   postgresSecretProviderClass: "ibank-postgres"
   redisSecretProviderClass: "ibank-redis"
   datasourceUrl: ""
