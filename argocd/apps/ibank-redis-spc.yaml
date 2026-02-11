@@ -8,14 +8,14 @@ spec:
   parameters:
     region: us-east-1
     objects: |
-      - objectName: "ibank-eks-dev/redis/auth"
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/redis/auth"
         objectType: "secretsmanager"
         jmesPath:
           - path: "host"
-            objectAlias: "SPRING_DATA_REDIS_HOST"
+            objectAlias: "spring.data.redis.host"
           - path: "port"
-            objectAlias: "SPRING_DATA_REDIS_PORT"
+            objectAlias: "spring.data.redis.port"
           - path: "authToken"
-            objectAlias: "SPRING_DATA_REDIS_PASSWORD"
+            objectAlias: "spring.data.redis.password"
           - path: "tls"
-            objectAlias: "SPRING_DATA_REDIS_SSL_ENABLED"
+            objectAlias: "spring.data.redis.ssl.enabled"
