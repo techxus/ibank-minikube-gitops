@@ -8,10 +8,14 @@ spec:
   parameters:
     region: us-east-1
     objects: |
-      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/msk/bootstrap"
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/msk/auth-XXXXX"
         objectType: "secretsmanager"
         jmesPath:
-          - path: "bootstrapServersTls"
+          - path: "bootstrapServers"
             objectAlias: "spring.kafka.bootstrap-servers"
           - path: "securityProtocol"
             objectAlias: "spring.kafka.properties.security.protocol"
+          - path: "saslMechanism"
+            objectAlias: "spring.kafka.properties.sasl.mechanism"
+          - path: "saslJaasConfig"
+            objectAlias: "spring.kafka.properties.sasl.jaas.config"
