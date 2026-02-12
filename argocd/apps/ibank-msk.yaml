@@ -1,0 +1,17 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: ibank-msk
+  namespace: apps-dev
+spec:
+  provider: aws
+  parameters:
+    region: us-east-1
+    objects: |
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/msk/bootstrap"
+        objectType: "secretsmanager"
+        jmesPath:
+          - path: "bootstrapServersTls"
+            objectAlias: "spring.kafka.bootstrap-servers"
+          - path: "securityProtocol"
+            objectAlias: "spring.kafka.properties.security.protocol"
