@@ -3,7 +3,7 @@ nameOverride: reporting-service
 # Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/reporting-service
-  tag: "c102a9541f698895f6e19fde3dfda902cc098160"
+  tag: "9d59c56579b26e51a9b49b64343e64807f503172"
 
 spring:
   profile: dev
