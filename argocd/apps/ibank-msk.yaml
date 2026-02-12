@@ -1,21 +1,26 @@
 apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
-  name: ibank-msk
+  name: user-service-kafka-spc
   namespace: apps-dev
 spec:
   provider: aws
   parameters:
-    region: us-east-1
     objects: |
-      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/msk/auth-XXXXX"
+      - objectName: "ibank-eks-dev/msk/bootstrap"
         objectType: "secretsmanager"
         jmesPath:
-          - path: "bootstrapServers"
-            objectAlias: "spring.kafka.bootstrap-servers"
-          - path: "securityProtocol"
-            objectAlias: "spring.kafka.properties.security.protocol"
-          - path: "saslMechanism"
-            objectAlias: "spring.kafka.properties.sasl.mechanism"
-          - path: "saslJaasConfig"
-            objectAlias: "spring.kafka.properties.sasl.jaas.config"
+          - path: bootstrapServers
+            objectAlias: spring.kafka.bootstrap-servers
+          - path: securityProtocol
+            objectAlias: spring.kafka.properties.security.protocol
+          - path: saslMechanism
+            objectAlias: spring.kafka.properties.sasl.mechanism
+
+      - objectName: "ibank-eks-dev/msk/scram"
+        objectType: "secretsmanager"
+        jmesPath:
+          - path: username
+            objectAlias: kafka.sasl.username
+          - path: password
+            objectAlias: kafka.sasl.password
