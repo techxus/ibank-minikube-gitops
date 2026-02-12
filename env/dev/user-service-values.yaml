@@ -1,6 +1,5 @@
 nameOverride: user-service
 
-# Value of tag will be overridden by GitHub Actions when the docker image is built
 image:
   repository: techxus/user-service
   tag: "5961ccac91aee68d41ecf53b0161b63b5038e047"
@@ -20,11 +19,18 @@ monitoring:
 secretsStore:
   enabled: true
   region: us-east-1
+
   mountPath: "/mnt/secrets-store"
-  postgresSecretProviderClass: "ibank-postgres"
-  redisSecretProviderClass: "ibank-redis"
   mountPathPostgres: "/mnt/secrets-store/postgres"
   mountPathRedis: "/mnt/secrets-store/redis"
-  secretArn: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
+  mountPathMsk: "/mnt/secrets-store/msk"
+
+  postgresSecretProviderClass: "ibank-postgres"
+  redisSecretProviderClass: "ibank-redis"
+  mskSecretProviderClass: "ibank-msk"
+
+  # keep DB URL as Helm/env (works well)
   datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"
 
+  # optional metadata only (not required by template)
+  secretArn: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8

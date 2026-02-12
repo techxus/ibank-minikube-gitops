@@ -38,9 +38,13 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # Load Postgres + Redis from CSI configtree
+            # Load Postgres + Redis + MSK from CSI configtree
             - name: SPRING_CONFIG_IMPORT
-              value: {{ printf "optional:configtree:%s/postgres/,optional:configtree:%s/redis/" .Values.secretsStore.mountPath .Values.secretsStore.mountPath | quote }}
+              value: {{ printf "optional:configtree:%s/,optional:configtree:%s/,optional:configtree:%s/"
+                .Values.secretsStore.mountPathPostgres
+                .Values.secretsStore.mountPathRedis
+                .Values.secretsStore.mountPathMsk
+                | quote }}
 
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
@@ -56,10 +60,13 @@ spec:
 
             {{- if .Values.secretsStore.enabled }}
             - name: secrets-store-postgres
-              mountPath: {{ printf "%s/postgres" .Values.secretsStore.mountPath | quote }}
+              mountPath: {{ .Values.secretsStore.mountPathPostgres | quote }}
               readOnly: true
             - name: secrets-store-redis
-              mountPath: {{ printf "%s/redis" .Values.secretsStore.mountPath | quote }}
+              mountPath: {{ .Values.secretsStore.mountPathRedis | quote }}
+              readOnly: true
+            - name: secrets-store-msk
+              mountPath: {{ .Values.secretsStore.mountPathMsk | quote }}
               readOnly: true
             {{- end }}
           {{- end }}
@@ -109,12 +116,18 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "ibank-postgres"
+              secretProviderClass: {{ .Values.secretsStore.postgresSecretProviderClass | quote }}
         - name: secrets-store-redis
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "ibank-redis"
+              secretProviderClass: {{ .Values.secretsStore.redisSecretProviderClass | quote }}
+        - name: secrets-store-msk
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secretsStore.mskSecretProviderClass | quote }}
         {{- end }}
       {{- end }}
