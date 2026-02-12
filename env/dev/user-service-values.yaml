@@ -16,6 +16,26 @@ monitoring:
   serviceMonitor:
     enabled: false
 
+# Mount an application.yaml to guarantee SCRAM jaas config is assembled
+config:
+  enabled: true
+  applicationYaml: |
+    spring:
+      kafka:
+        # These come from configtree files created by SecretProviderClass:
+        # spring.kafka.bootstrap-servers
+        # spring.kafka.properties.security.protocol
+        # spring.kafka.properties.sasl.mechanism
+        #
+        # We assemble SCRAM JAAS config from configtree-provided username/password:
+        properties:
+          sasl:
+            jaas:
+              config: >-
+                org.apache.kafka.common.security.scram.ScramLoginModule required
+                username="${kafka.sasl.username}"
+                password="${kafka.sasl.password}";
+
 secretsStore:
   enabled: true
   region: us-east-1
