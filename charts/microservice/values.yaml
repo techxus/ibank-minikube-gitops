@@ -5,6 +5,7 @@ replicaCount: 1
 
 spring:
   profile: ""
+  defaultSchema: ""
 
 image:
   repository: ""
@@ -69,21 +70,14 @@ secretsStore:
   enabled: false
   region: us-east-1
 
-  # single base mount root
   mountPath: "/mnt/secrets-store"
-
-  # per-system subpaths (derived from mountPath, but keep explicit)
   mountPathPostgres: "/mnt/secrets-store/postgres"
   mountPathRedis: "/mnt/secrets-store/redis"
   mountPathMsk: "/mnt/secrets-store/msk"
 
-  # SecretProviderClass names (override per env if needed)
   postgresSecretProviderClass: "ibank-postgres"
   redisSecretProviderClass: "ibank-redis"
   mskSecretProviderClass: "ibank-msk"
 
-  # app still supplies URL explicitly via Helm
   datasourceUrl: ""
-
-  # (optional metadata; not required by deployment template)
   secretArn: ""
