@@ -7,9 +7,8 @@ spec:
   provider: aws
   parameters:
     region: us-east-1
-    usePodIdentity: "true"
     objects: |
-      - objectName: "ibank-eks-dev/redis/auth"
+      - objectName: "arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/redis/auth-k74NT7"
         objectType: "secretsmanager"
         jmesPath:
           - path: "host"
