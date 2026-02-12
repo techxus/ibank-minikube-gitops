@@ -10,7 +10,7 @@ spec:
       - objectName: "ibank-eks-dev/msk/bootstrap"
         objectType: "secretsmanager"
         jmesPath:
-          - path: bootstrapServers
+          - path: bootstrapServersTls
             objectAlias: spring.kafka.bootstrap-servers
           - path: securityProtocol
             objectAlias: spring.kafka.properties.security.protocol
