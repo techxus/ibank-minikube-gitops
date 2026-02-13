@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{- $app := (default .Release.Name .Values.nameOverride) -}}{{ $app }}
+  {{- $app := (default .Release.Name .Values.nameOverride) -}}
+  name: {{ $app }}
   labels:
     app: {{ $app }}
     app.kubernetes.io/name: {{ $app }}
@@ -42,7 +43,7 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # Load secrets from CSI configtree (only the paths that are configured)
+            # Import ALL configured configtree mounts (postgres/redis/msk)
             - name: SPRING_CONFIG_IMPORT
               value: {{- $imports := list -}}
                 {{- if .Values.secretsStore.mountPathPostgres }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathPostgres) -}}{{- end -}}
