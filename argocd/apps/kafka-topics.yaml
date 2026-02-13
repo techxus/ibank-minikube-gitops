@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ibank-kafka-topics-bootstrap
+  namespace: apps-dev
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: ibank-kafka-topics-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: db-secrets-sa
+
+      volumes:
+        - name: secrets-store-msk
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "ibank-msk"
+
+      containers:
+        - name: kafka-topics-create
+          image: confluentinc/cp-kafka:7.6.0
+          imagePullPolicy: IfNotPresent
+
+          volumeMounts:
+            - name: secrets-store-msk
+              mountPath: /mnt/secrets-store/msk
+              readOnly: true
+
+          command:
+            - /bin/bash
+            - -lc
+            - |
+              set -euo pipefail
+
+              BOOTSTRAP="$(cat /mnt/secrets-store/msk/spring.kafka.bootstrap-servers)"
+              SECURITY_PROTOCOL="$(cat /mnt/secrets-store/msk/spring.kafka.properties.security.protocol)"
+              SASL_MECH="$(cat /mnt/secrets-store/msk/spring.kafka.properties.sasl.mechanism)"
+              USERNAME="$(cat /mnt/secrets-store/msk/kafka.sasl.username)"
+              PASSWORD="$(cat /mnt/secrets-store/msk/kafka.sasl.password)"
+
+              cat > /tmp/client.properties <<EOF
+              security.protocol=${SECURITY_PROTOCOL}
+              sasl.mechanism=${SASL_MECH}
+              sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="${USERNAME}" password="${PASSWORD}";
+              ssl.endpoint.identification.algorithm=https
+              EOF
+
+              echo "Bootstrap: ${BOOTSTRAP}"
+              echo "Creating topics (if missing)..."
+
+              TOPICS=(
+                "ibank.user.activity.topic"
+                "ibank.report.topic"
+                "ibank.notification.topic"
+              )
+
+              for t in "${TOPICS[@]}"; do
+                echo " - ensure topic: $t"
+                kafka-topics --bootstrap-server "${BOOTSTRAP}" \
+                  --command-config /tmp/client.properties \
+                  --create --if-not-exists \
+                  --topic "$t"
+              done
+
+              echo "All topics ensured."
