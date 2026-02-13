@@ -1,7 +1,7 @@
+{{- $app := (default .Release.Name .Values.nameOverride) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  {{- $app := (default .Release.Name .Values.nameOverride) -}}
   name: {{ $app }}
   labels:
     app: {{ $app }}
@@ -43,12 +43,11 @@ spec:
               value: {{ .Values.spring.defaultSchema | default "public" | quote }}
 
             {{- if .Values.secretsStore.enabled }}
-            # ✅ Always import configtree for all configured mounts (postgres/redis/msk)
             - name: SPRING_CONFIG_IMPORT
               value: {{- $imports := list -}}
-                {{- $imports = append $imports (printf "optional:configtree:%s/" (default "/mnt/secrets-store/postgres" .Values.secretsStore.mountPathPostgres)) -}}
-                {{- $imports = append $imports (printf "optional:configtree:%s/" (default "/mnt/secrets-store/redis" .Values.secretsStore.mountPathRedis)) -}}
-                {{- $imports = append $imports (printf "optional:configtree:%s/" (default "/mnt/secrets-store/msk" .Values.secretsStore.mountPathMsk)) -}}
+                {{- if .Values.secretsStore.mountPathPostgres }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathPostgres) -}}{{- end -}}
+                {{- if .Values.secretsStore.mountPathRedis }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathRedis) -}}{{- end -}}
+                {{- if .Values.secretsStore.mountPathMsk }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathMsk) -}}{{- end -}}
                 {{- join "," $imports | quote }}
 
             - name: SPRING_DATASOURCE_URL
@@ -68,15 +67,21 @@ spec:
             {{- end }}
 
             {{- if .Values.secretsStore.enabled }}
+            {{- if .Values.secretsStore.mountPathPostgres }}
             - name: secrets-store-postgres
-              mountPath: {{ default "/mnt/secrets-store/postgres" .Values.secretsStore.mountPathPostgres | quote }}
+              mountPath: {{ .Values.secretsStore.mountPathPostgres | quote }}
               readOnly: true
+            {{- end }}
+            {{- if .Values.secretsStore.mountPathRedis }}
             - name: secrets-store-redis
-              mountPath: {{ default "/mnt/secrets-store/redis" .Values.secretsStore.mountPathRedis | quote }}
+              mountPath: {{ .Values.secretsStore.mountPathRedis | quote }}
               readOnly: true
+            {{- end }}
+            {{- if .Values.secretsStore.mountPathMsk }}
             - name: secrets-store-msk
-              mountPath: {{ default "/mnt/secrets-store/msk" .Values.secretsStore.mountPathMsk | quote }}
+              mountPath: {{ .Values.secretsStore.mountPathMsk | quote }}
               readOnly: true
+            {{- end }}
             {{- end }}
           {{- end }}
 
@@ -120,23 +125,29 @@ spec:
         {{- end }}
 
         {{- if .Values.secretsStore.enabled }}
+        {{- if .Values.secretsStore.mountPathPostgres }}
         - name: secrets-store-postgres
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ required "secretsStore.postgresSecretProviderClass is required" .Values.secretsStore.postgresSecretProviderClass | quote }}
+        {{- end }}
+        {{- if .Values.secretsStore.mountPathRedis }}
         - name: secrets-store-redis
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ required "secretsStore.redisSecretProviderClass is required" .Values.secretsStore.redisSecretProviderClass | quote }}
+        {{- end }}
+        {{- if .Values.secretsStore.mountPathMsk }}
         - name: secrets-store-msk
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ required "secretsStore.mskSecretProviderClass is required" .Values.secretsStore.mskSecretProviderClass | quote }}
+        {{- end }}
         {{- end }}
       {{- end }}
