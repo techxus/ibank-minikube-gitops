@@ -37,8 +37,25 @@ ingress:
 
 probes:
   enabled: true
+
+  # Defaults assume NO servlet context-path.
+  # Each service should override these if it sets server.servlet.context-path.
   readinessPath: /actuator/health/readiness
   livenessPath: /actuator/health/liveness
+  startupPath: /actuator/health/liveness
+
+  timeoutSeconds: 2
+
+  startupFailureThreshold: 60
+  startupPeriodSeconds: 5
+
+  readinessInitialDelaySeconds: 5
+  readinessPeriodSeconds: 10
+  readinessFailureThreshold: 3
+
+  livenessInitialDelaySeconds: 60
+  livenessPeriodSeconds: 20
+  livenessFailureThreshold: 6
 
 resources:
   requests:

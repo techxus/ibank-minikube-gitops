@@ -9,8 +9,11 @@ spring:
   defaultSchema: user
 
 probes:
+  enabled: true
   readinessPath: /api/v1/user/actuator/health/readiness
   livenessPath: /api/v1/user/actuator/health/liveness
+  startupPath: /api/v1/user/actuator/health/liveness
+
 
 monitoring:
   serviceMonitor:

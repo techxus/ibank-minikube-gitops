@@ -95,18 +95,33 @@ spec:
           {{- end }}
 
           {{- if .Values.probes.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.probes.startupPath }}
+              port: {{ .Values.service.targetPort }}
+            # give the app time to boot (DB migrations, Kafka metadata, etc.)
+            failureThreshold: {{ .Values.probes.startupFailureThreshold }}
+            periodSeconds: {{ .Values.probes.startupPeriodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+
           readinessProbe:
             httpGet:
               path: {{ .Values.probes.readinessPath }}
               port: {{ .Values.service.targetPort }}
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: {{ .Values.probes.readinessInitialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readinessPeriodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readinessFailureThreshold }}
+
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.livenessPath }}
               port: {{ .Values.service.targetPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 20
+            # liveness should not be aggressive; it’s for “stuck process”, not slow deps
+            initialDelaySeconds: {{ .Values.probes.livenessInitialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.livenessPeriodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.livenessFailureThreshold }}
           {{- end }}
 
           resources:
