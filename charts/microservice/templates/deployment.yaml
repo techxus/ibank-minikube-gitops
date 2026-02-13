@@ -1,4 +1,17 @@
 {{- $app := (default .Release.Name .Values.nameOverride) -}}
+{{- $imports := list -}}
+{{- if .Values.secretsStore.enabled -}}
+  {{- if .Values.secretsStore.mountPathPostgres -}}
+    {{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathPostgres) -}}
+  {{- end -}}
+  {{- if .Values.secretsStore.mountPathRedis -}}
+    {{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathRedis) -}}
+  {{- end -}}
+  {{- if .Values.secretsStore.mountPathMsk -}}
+    {{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathMsk) -}}
+  {{- end -}}
+{{- end -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,11 +57,7 @@ spec:
 
             {{- if .Values.secretsStore.enabled }}
             - name: SPRING_CONFIG_IMPORT
-              value: {{- $imports := list -}}
-                {{- if .Values.secretsStore.mountPathPostgres }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathPostgres) -}}{{- end -}}
-                {{- if .Values.secretsStore.mountPathRedis }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathRedis) -}}{{- end -}}
-                {{- if .Values.secretsStore.mountPathMsk }}{{- $imports = append $imports (printf "optional:configtree:%s/" .Values.secretsStore.mountPathMsk) -}}{{- end -}}
-                {{- join "," $imports | quote }}
+              value: {{ join "," $imports | quote }}
 
             - name: SPRING_DATASOURCE_URL
               value: {{ required "secretsStore.datasourceUrl is required when secretsStore.enabled=true" .Values.secretsStore.datasourceUrl | quote }}
