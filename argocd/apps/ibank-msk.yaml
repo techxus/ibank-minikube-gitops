@@ -7,19 +7,15 @@ spec:
   provider: aws
   parameters:
     objects: |
-      - objectName: "ibank-eks-dev/msk/bootstrap"
+      - objectName: "ibank-eks-dev/msk/app"
         objectType: "secretsmanager"
         jmesPath:
-          - path: bootstrapServersTls
+          - path: bootstrapBrokers
             objectAlias: spring.kafka.bootstrap-servers
           - path: securityProtocol
             objectAlias: spring.kafka.properties.security.protocol
           - path: saslMechanism
             objectAlias: spring.kafka.properties.sasl.mechanism
-
-      - objectName: "ibank-eks-dev/msk/scram"
-        objectType: "secretsmanager"
-        jmesPath:
           - path: username
             objectAlias: kafka.sasl.username
           - path: password
