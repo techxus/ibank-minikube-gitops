@@ -2,7 +2,7 @@ nameOverride: user-service
 
 image:
   repository: techxus/user-service
-  tag: "e9c83f6a1d1b1e39695d2c815efd229aa1060bad"
+  tag: "ffd4018e786e699b7c2d2833dbb51e9de25572e2"
 
 spring:
   profile: dev
