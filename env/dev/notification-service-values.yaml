@@ -17,10 +17,35 @@ monitoring:
   serviceMonitor:
     enabled: false
 
+config:
+  enabled: true
+  applicationYaml: |
+    spring:
+      kafka:
+        # ✅ Force Spring to bind bootstrap + protocol + mechanism from the mounted configtree keys
+        # These keys are present as files under /mnt/secrets-store/msk/
+        bootstrap-servers: ${spring.kafka.bootstrap-servers}
+        properties:
+          security.protocol: ${spring.kafka.properties.security.protocol}
+          sasl.mechanism: ${spring.kafka.properties.sasl.mechanism}
+          sasl.jaas.config: >-
+            org.apache.kafka.common.security.scram.ScramLoginModule required
+            username="${kafka.sasl.username}"
+            password="${kafka.sasl.password}";
+
 secretsStore:
   enabled: true
   region: us-east-1
-  secretProviderClass: ibank-postgres
+
+  mountPath: "/mnt/secrets-store"
+  mountPathPostgres: "/mnt/secrets-store/postgres"
+  mountPathRedis: "/mnt/secrets-store/redis"
+  mountPathMsk: "/mnt/secrets-store/msk"
+
+  postgresSecretProviderClass: "ibank-postgres"
+  redisSecretProviderClass: "ibank-redis"
+  mskSecretProviderClass: "ibank-msk"
+
   secretArn: arn:aws:secretsmanager:us-east-1:121897425968:secret:ibank-eks-dev/rds/postgres-HnfeI8
   datasourceUrl: "jdbc:postgresql://ibank-eks-dev-postgres.c9jlnhhcva7f.us-east-1.rds.amazonaws.com:5432/appdb"
 
