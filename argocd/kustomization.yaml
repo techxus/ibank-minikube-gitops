@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 resources:
   - applicationsets/ibank-services-aws.yaml
   - applicationsets/ibank-services-local.yaml
